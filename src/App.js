@@ -8,7 +8,7 @@ function App() {
       <h1>1. 时序散点图</h1>
       <div className="demo-box">
         <div className="chart-box">
-          <ScatterTimeline theme="light" width={"100rem"} height={"53rem"} />
+          <ScatterTimeline theme="light" width={"75rem"} height={"53rem"} />
         </div>
       </div>
     </div>

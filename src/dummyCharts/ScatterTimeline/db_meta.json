@@ -1,5 +1,6 @@
 {
     "meta": [
+        ["omnisci/omniscidb", "OmniSciDB", "OmniSciDB.png", "https://www.omnisci.com/"],
         ["MariaDB/server", "MariaDB", "MariaDB.png", "https://mariadb.org/"],
         ["aerospike/aerospike-server", "Aerospike", "Aerospike.png", "https://aerospike.com/"],
         ["apache/accumulo", "Accumulo", "Accumulo.png", "https://accumulo.apache.org/"],

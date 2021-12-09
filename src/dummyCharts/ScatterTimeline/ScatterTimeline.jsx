@@ -1,13 +1,56 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as echarts from "echarts";
 import data from "./data.json";
 import db_meta_json from "./db_meta.json";
 
 const db_meta = db_meta_json.meta;
 
+const EVENT_MAX_VALUES = {
+  "WatchEvent": 10500, //10250
+  "CreateEvent": 7500, //7256
+  "PushEvent": 19000, //18935
+  "MemberEvent": 20, //15
+  "PullRequestEvent": 25500, //25062
+  "ForkEvent": 4500, //4344
+  "DeleteEvent": 4500, //4350
+  "IssueCommentEvent": 41000, //40343
+  "CommitCommentEvent": 1500, //1405
+  "PullRequestReviewCommentEvent": 23000, //22599
+  "IssuesEvent": 7500, //7240
+  "GollumEvent": 250, //234
+  "ReleaseEvent": 250, //237
+}
+
 const ScatterTimeline = (props) => {
   const { theme, width, height } = props;
   const divEL = useRef(null);
+
+  const [currentEventType, setCurrentEventType] = useState(data.series_meta[0]);
+
+  useEffect(() => {
+    let chartDOM = divEL.current;
+    const instance = echarts.init(chartDOM);
+    console.log("Echarts instance initiated.");
+
+    return () => {
+      instance.dispose();
+      console.log("Echarts instance disposed.");
+    };
+  }, []);
+
+  useEffect(() => {
+    let chartDOM = divEL.current;
+    const instance = echarts.getInstanceByDom(chartDOM);
+    // const option = generateOption(theme, indicators, maxScales, values);
+    instance.setOption(option);
+    console.log("Echarts option (set)updated.");
+  }, [currentEventType]);
+
+  const onSelectEventType = (e) => {
+    let chosenEventType = e.target.value;
+    console.log(`切换到event_type为${chosenEventType}的时序散点图`);
+    setCurrentEventType(chosenEventType);
+  };
 
   var itemStyle = {
     opacity: 0.8,
@@ -16,13 +59,9 @@ const ScatterTimeline = (props) => {
     var y = Math.sqrt(x / 5e8) + 0.1;
     return y * 80;
   };
-  // Schema:
-  var schema = [
-    { name: "Income", index: 0, text: "人均收入", unit: "美元" },
-    { name: "LifeExpectancy", index: 1, text: "人均寿命", unit: "岁" },
-    { name: "Population", index: 2, text: "总人口", unit: "" },
-    { name: "Country", index: 3, text: "国家", unit: "" },
-  ];
+
+  let maxY = 0;
+
   const option = {
     baseOption: {
       timeline: {
@@ -58,7 +97,7 @@ const ScatterTimeline = (props) => {
           },
         },
         {
-          text: "DBMS OSS activity-popularity log-log distribution",
+          text: "标题还没确定",
           subtext: "Sampled from: DB-Engines October XXX & GitHub logs XXX",
           left: "left",
           top: 10,
@@ -73,11 +112,7 @@ const ScatterTimeline = (props) => {
         borderWidth: 1,
         formatter: function (obj) {
           var value = obj.value;
-          // prettier-ignore
-          return schema[3].text + '：' + value[3] + '<br>'
-                        + schema[1].text + '：' + value[1] + schema[1].unit + '<br>'
-                        + schema[0].text + '：' + value[0] + schema[0].unit + '<br>'
-                        + schema[2].text + '：' + value[2] + '<br>';
+          return "hi" + value[0];
         },
       },
       grid: {
@@ -88,13 +123,17 @@ const ScatterTimeline = (props) => {
       },
       xAxis: {
         type: "log",
-        logBase: 2,
+        logBase: 10,
         min: 1,
-        name: "Activity",
+        max: 500,
+        name: 'db_engines_ranking_trend_popularity',
         nameGap: 25,
         nameLocation: "middle",
         nameTextStyle: {
-          fontSize: 18,
+          fontSize: 26,
+        },
+        axisLine: {
+          symbol: ['none', 'arrow']
         },
         splitLine: {
           show: false,
@@ -105,11 +144,17 @@ const ScatterTimeline = (props) => {
       },
       yAxis: {
         type: "log",
-        logBase: 2,
-        min: 1,
-        name: "Popularity",
+        logBase: 10,
+        min: 10,
+        max: EVENT_MAX_VALUES[currentEventType],
+        name: currentEventType,
+        nameLocation: 'middle',
+        nameGap: 50,
         nameTextStyle: {
-          fontSize: 18,
+          fontSize: 26,
+        },
+        axisLine: {
+          symbol: ['none', 'arrow']
         },
         splitLine: {
           show: false,
@@ -118,20 +163,6 @@ const ScatterTimeline = (props) => {
           formatter: "{value}",
         },
       },
-      // visualMap: [
-      //   {
-      //     show: false,
-      //     dimension: 2, //对应的第几维数据
-      //     categories: data.dbnames,
-      //     inRange: {
-      //       color: (function () {
-      //         // prettier-ignore
-      //         var colors = ['#51689b', '#ce5c5c', '#fbc357', '#8fbf8f', '#659d84', '#fb8e6a', '#c77288', '#786090', '#91c4c5', '#6890ba'];
-      //         return colors.concat(colors);
-      //       })(),
-      //     },
-      //   },
-      // ],
       series: [
         {
           type: "scatter",
@@ -142,7 +173,7 @@ const ScatterTimeline = (props) => {
             formatter: (params) => {
               let commonName = "";
               for (let i = 0; i < db_meta.length; i++) {
-                if (db_meta[i][0] == params.value[2]) {
+                if (db_meta[i][0] == params.value[14]) {
                   commonName = db_meta[i][1];
                   break;
                 }
@@ -150,11 +181,32 @@ const ScatterTimeline = (props) => {
               return commonName;
             },
           },
+          dimensions: [
+            "WatchEvent",
+            "CreateEvent",
+            "PushEvent",
+            "MemberEvent",
+            "PullRequestEvent",
+            "ForkEvent",
+            "DeleteEvent",
+            "IssueCommentEvent",
+            "CommitCommentEvent",
+            "PullRequestReviewCommentEvent",
+            "IssuesEvent",
+            "GollumEvent",
+            "ReleaseEvent",
+            "db_engines_ranking_trend_popularity",
+            "db_repo_full_name",
+          ],
+          encode: {
+            x: "db_engines_ranking_trend_popularity",
+            y: currentEventType
+          },
           data: data.series[0],
           symbol: (params) => {
             let logoFileName = "";
             for (let i = 0; i < db_meta.length; i++) {
-              if (db_meta[i][0] == params[2]) {
+              if (db_meta[i][0] == params[14]) {
                 logoFileName = db_meta[i][2];
                 break;
               }
@@ -164,7 +216,7 @@ const ScatterTimeline = (props) => {
           },
           symbolSize: function (val) {
             // return sizeFunction(val[2]);
-            return 50;
+            return 80;
           },
         },
       ],
@@ -184,6 +236,27 @@ const ScatterTimeline = (props) => {
         name: data.timeline[n],
         type: "scatter",
         itemStyle: itemStyle,
+        dimensions: [
+          "WatchEvent",
+          "CreateEvent",
+          "PushEvent",
+          "MemberEvent",
+          "PullRequestEvent",
+          "ForkEvent",
+          "DeleteEvent",
+          "IssueCommentEvent",
+          "CommitCommentEvent",
+          "PullRequestReviewCommentEvent",
+          "IssuesEvent",
+          "GollumEvent",
+          "ReleaseEvent",
+          "db_engines_ranking_trend_popularity",
+          "db_repo_full_name",
+        ],
+        encode: {
+          x: "db_engines_ranking_trend_popularity",
+          y: currentEventType
+        },
         data: data.series[n],
         // symbolSize: function (val) {
         //   return sizeFunction(val[2]);
@@ -192,26 +265,20 @@ const ScatterTimeline = (props) => {
     });
   }
 
-  useEffect(() => {
-    let chartDOM = divEL.current;
-    const instance = echarts.init(chartDOM);
-    console.log("Echarts instance initiated.");
-
-    return () => {
-      instance.dispose();
-      console.log("Echarts instance disposed.");
-    };
-  }, []);
-
-  useEffect(() => {
-    let chartDOM = divEL.current;
-    const instance = echarts.getInstanceByDom(chartDOM);
-    // const option = generateOption(theme, indicators, maxScales, values);
-    instance.setOption(option);
-    console.log("Echarts option (set)updated.");
-  }, []);
-
-  return <div ref={divEL} style={{ width, height }}></div>;
+  return (
+    <div>
+      <div className="locale-selector">
+        <select onChange={onSelectEventType} defaultValue={currentEventType}>
+          {data.series_meta.map((eventType) => (
+            <option key={eventType} value={eventType}>
+              {eventType}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div ref={divEL} style={{ width, height }}></div>
+    </div>
+  );
 };
 
 export default ScatterTimeline;
