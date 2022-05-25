@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  margin: 1rem 5rem 1rem 5rem;
+  margin: 5px 25px 5px 25px;
 }
 
 h1.header {
@@ -9,9 +9,9 @@ h1.header {
 
 .demo-box {
   position: relative;
-  padding: 1rem;
-  height: 55rem;
-  border: .4rem dotted lightsteelblue;
+  padding: 10px;
+  height: 500px;
+  border: 3px dotted lightsteelblue;
 }
 
 .chart-box {
