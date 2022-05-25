@@ -7,113 +7,165 @@ const MultiDrilldown = (props) => {
   const divEL = useRef(null);
 
   useEffect(() => {
-    const option = {
-      xAxis: {
-        data: ["Animals", "Fruits", "Cars"],
-      },
-      yAxis: {},
-      dataGroupId: "",
-      animationDurationUpdate: 500,
-      series: {
-        type: "bar",
-        id: "sales",
-        data: [
-          {
-            value: 5,
-            groupId: "animals",
-          },
-          {
-            value: 2,
-            groupId: "fruits",
-          },
-          {
-            value: 4,
-            groupId: "cars",
-          },
-        ],
-        universalTransition: {
-          enabled: true,
-          divideShape: "clone",
-        },
-      },
+    // level 1
+    const data_1 = {
+      dataGroupId: "1", // In root level, this field dosen't matter
+      data: [
+        ["1_1", 5, "1_1"], // x, y, groupId
+        ["1_2", 2, "1_2"],
+      ],
     };
-    const drilldownData = [
-      {
-        dataGroupId: "animals",
-        data: [
-          ["Cats", 4],
-          ["Dogs", 2],
-          ["Cows", 1],
-          ["Sheep", 2],
-          ["Pigs", 1],
-        ],
-      },
-      {
-        dataGroupId: "fruits",
-        data: [
-          ["Apples", 4],
-          ["Oranges", 2],
-        ],
-      },
-      {
-        dataGroupId: "cars",
-        data: [
-          ["Toyota", 4],
-          ["Opel", 2],
-          ["Volkswagen", 2],
-        ],
-      },
+
+    // level 2
+    const data_1_1 = {
+      dataGroupId: "1_1",
+      data: [
+        ["1_1_1", 2, "1_1_1"],
+        ["1_1_2", 2, "1_1_2"],
+        ["1_1_3", 3, "1_1_3"],
+      ],
+    };
+
+    const data_1_2 = {
+      dataGroupId: "1_2",
+      data: [
+        ["1_2_1", 6, "1_2_1"],
+        ["1_2_2", 7, "1_2_2"],
+      ],
+    };
+
+    // level 3
+    const data_1_1_1 = {
+      dataGroupId: "1_1_1",
+      data: [
+        ["1_1_1_A", 5],
+        ["1_1_1_B", 6],
+        ["1_1_1_C", 7],
+        ["1_1_1_D", 8],
+      ],
+    };
+
+    const data_1_1_2 = {
+      dataGroupId: "1_1_2",
+      data: [
+        ["1_1_2_A", 2],
+        ["1_1_2_B", 9],
+      ],
+    };
+
+    const data_1_1_3 = {
+      dataGroupId: "1_1_3",
+      data: [
+        ["1_1_3_A", 1],
+        ["1_1_3_B", 2],
+        ["1_1_3_C", 8],
+      ],
+    };
+
+    const data_1_2_1 = {
+      dataGroupId: "1_2_1",
+      data: [
+        ["1_2_1_A", 9],
+        ["1_2_1_B", 2],
+        ["1_2_1_C", 1],
+      ],
+    };
+
+    const data_1_2_2 = {
+      dataGroupId: "1_2_2",
+      data: [
+        ["1_2_2_A", 7],
+        ["1_2_2_B", 7],
+      ],
+    };
+
+    const allDataGroups = [
+      data_1,
+      data_1_1,
+      data_1_2,
+      data_1_1_1,
+      data_1_1_2,
+      data_1_1_3,
+      data_1_2_1,
+      data_1_2_2,
     ];
+
+    const allOptions = {};
+
+    allDataGroups.forEach((dataGroup, index) => {
+      const { dataGroupId, data } = dataGroup;
+      const option = {
+        xAxis: {
+          type: "category",
+        },
+        yAxis: {},
+        dataGroupId: dataGroupId,
+        animationDurationUpdate: 500,
+        series: {
+          type: "bar",
+          // id: "sales",
+          encode: {
+            x: 0,
+            y: 1,
+            itemGroupId: 2,
+          },
+          data: data,
+          universalTransition: {
+            enabled: true,
+            divideShape: "clone",
+          },
+        },
+        graphic: [
+          {
+            type: "text",
+            left: 50,
+            top: 20,
+            style: {
+              text: "Back",
+              fontSize: 18,
+            },
+            onclick: function () {
+              goBack();
+            },
+          },
+        ],
+      };
+      allOptions[dataGroupId] = option;
+    });
+
+    // A stack to remember previous dataGroups
+    const dataGroupIdStack = [];
+
+    const goForward = (dataGroupId) => {
+      let chartDOM = divEL.current;
+      let instance = echarts.getInstanceByDom(chartDOM);
+      dataGroupIdStack.push(instance.getOption().dataGroupId); // push current dataGroupId into stack.
+      instance.setOption(allOptions[dataGroupId]);
+    };
+
+    const goBack = () => {
+      if (dataGroupIdStack.length === 0) {
+        console.log("Already in root dataGroup!");
+      } else {
+        console.log("Go back to previous level");
+        let chartDOM = divEL.current;
+        let instance = echarts.getInstanceByDom(chartDOM);
+        instance.setOption(allOptions[dataGroupIdStack.pop()]);
+      }
+    };
 
     let chartDOM = divEL.current;
     let instance = echarts.getInstanceByDom(chartDOM);
     if (!instance) {
       instance = echarts.init(chartDOM);
-      instance.on("click", (params) => {
-        if (params.data) {
-          var subData = drilldownData.find(function (data) {
-            return data.dataGroupId === params.data.groupId;
-          });
-          if (!subData) {
-            return;
-          }
-          instance.setOption({
-            xAxis: {
-              data: subData.data.map(function (item) {
-                return item[0];
-              }),
-            },
-            series: {
-              type: "bar",
-              id: "sales",
-              dataGroupId: subData.dataGroupId,
-              data: subData.data.map(function (item) {
-                return item[1];
-              }),
-              universalTransition: {
-                enabled: true,
-                divideShape: "clone",
-              },
-            },
-            graphic: [
-              {
-                type: "text",
-                left: 50,
-                top: 20,
-                style: {
-                  text: "Back",
-                  fontSize: 18,
-                },
-                onclick: function () {
-                  instance.setOption(option);
-                },
-              },
-            ],
-          });
+      instance.on("click", "series.bar", (params) => {
+        if (params.data[2]) {
+          const dataGroupId = params.data[2];
+          goForward(dataGroupId);
         }
       });
     }
-    instance.setOption(option);
+    instance.setOption(allOptions["1"]); // show root group (dataGroupId = 1) when init.
 
     return () => {
       instance.dispose();
