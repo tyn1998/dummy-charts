@@ -5,13 +5,13 @@ import MultiDrilldown from "./dummyCharts/MultiDrilldown/MultiDrilldown";
 function App() {
   return (
     <div className="App">
-      <h1 className="header">Dummy Charts Demos</h1>
-      <h1>1. 时序散点图</h1>
-      <div className="demo-box">
-        <div className="chart-box">
-          <ScatterTimeline theme="light" width={"1000px"} height={"500px"} />
-        </div>
-      </div>
+      {/* <h1 className="header">Dummy Charts Demos</h1> */}
+      {/* <h1>1. 时序散点图</h1> */}
+      {/* <div className="demo-box"> */}
+      {/*   <div className="chart-box"> */}
+      {/*     <ScatterTimeline theme="light" width={"1000px"} height={"500px"} /> */}
+      {/*   </div> */}
+      {/* </div> */}
 
       <h1>2. 多级下钻图</h1>
       <div className="demo-box">

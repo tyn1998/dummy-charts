@@ -90,20 +90,22 @@ const MultiDrilldown = (props) => {
       data_1_2_2,
     ];
 
-    const allOptions = {};
+    const allOptionsWithItemGroupId = {};
+    const allOptionsWithoutItemGroupId = {};
 
     allDataGroups.forEach((dataGroup, index) => {
       const { dataGroupId, data } = dataGroup;
-      const option = {
+      const optionWithItemGroupId = {
         xAxis: {
           type: "category",
         },
         yAxis: {},
-        dataGroupId: dataGroupId,
+        // dataGroupId: dataGroupId,
         animationDurationUpdate: 500,
         series: {
           type: "bar",
           // id: "sales",
+          dataGroupId: dataGroupId,
           encode: {
             x: 0,
             y: 1,
@@ -130,7 +132,47 @@ const MultiDrilldown = (props) => {
           },
         ],
       };
-      allOptions[dataGroupId] = option;
+      const optionWithoutItemGroupId = {
+        xAxis: {
+          type: "category",
+        },
+        yAxis: {},
+        // dataGroupId: dataGroupId,
+        animationDurationUpdate: 500,
+        series: {
+          type: "bar",
+          // id: "sales",
+          dataGroupId: dataGroupId,
+          encode: {
+            x: 0,
+            y: 1,
+            // itemGroupId: 2,
+          },
+          data: data.map((item, index) => {
+            return item.slice(0, 2);
+          }),
+          universalTransition: {
+            enabled: true,
+            divideShape: "clone",
+          },
+        },
+        graphic: [
+          {
+            type: "text",
+            left: 50,
+            top: 20,
+            style: {
+              text: "Back",
+              fontSize: 18,
+            },
+            onclick: function () {
+              goBack();
+            },
+          },
+        ],
+      };
+      allOptionsWithItemGroupId[dataGroupId] = optionWithItemGroupId;
+      allOptionsWithoutItemGroupId[dataGroupId] = optionWithoutItemGroupId;
     });
 
     // A stack to remember previous dataGroups
@@ -139,8 +181,9 @@ const MultiDrilldown = (props) => {
     const goForward = (dataGroupId) => {
       let chartDOM = divEL.current;
       let instance = echarts.getInstanceByDom(chartDOM);
-      dataGroupIdStack.push(instance.getOption().dataGroupId); // push current dataGroupId into stack.
-      instance.setOption(allOptions[dataGroupId]);
+      dataGroupIdStack.push(instance.getOption().series[0].dataGroupId); // push current dataGroupId into stack.
+      instance.setOption(allOptionsWithoutItemGroupId[dataGroupId], true);
+      instance.setOption(allOptionsWithItemGroupId[dataGroupId], true);
     };
 
     const goBack = () => {
@@ -150,7 +193,8 @@ const MultiDrilldown = (props) => {
         console.log("Go back to previous level");
         let chartDOM = divEL.current;
         let instance = echarts.getInstanceByDom(chartDOM);
-        instance.setOption(allOptions[dataGroupIdStack.pop()]);
+        instance.setOption(allOptionsWithoutItemGroupId[instance.getOption().series[0].dataGroupId], true);
+        instance.setOption(allOptionsWithItemGroupId[dataGroupIdStack.pop()], true);
       }
     };
 
@@ -165,7 +209,7 @@ const MultiDrilldown = (props) => {
         }
       });
     }
-    instance.setOption(allOptions["1"]); // show root group (dataGroupId = 1) when init.
+    instance.setOption(allOptionsWithItemGroupId["1"]); // show root group (dataGroupId = 1) when init.
 
     return () => {
       instance.dispose();
