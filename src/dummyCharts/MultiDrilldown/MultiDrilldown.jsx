@@ -182,8 +182,8 @@ const MultiDrilldown = (props) => {
       let chartDOM = divEL.current;
       let instance = echarts.getInstanceByDom(chartDOM);
       dataGroupIdStack.push(instance.getOption().series[0].dataGroupId); // push current dataGroupId into stack.
-      instance.setOption(allOptionsWithoutItemGroupId[dataGroupId], true);
-      instance.setOption(allOptionsWithItemGroupId[dataGroupId], true);
+      instance.setOption(allOptionsWithoutItemGroupId[dataGroupId], false);
+      instance.setOption(allOptionsWithItemGroupId[dataGroupId], false);
     };
 
     const goBack = () => {
@@ -193,7 +193,7 @@ const MultiDrilldown = (props) => {
         console.log("Go back to previous level");
         let chartDOM = divEL.current;
         let instance = echarts.getInstanceByDom(chartDOM);
-        instance.setOption(allOptionsWithoutItemGroupId[instance.getOption().series[0].dataGroupId], true);
+        instance.setOption(allOptionsWithoutItemGroupId[instance.getOption().series[0].dataGroupId], false);
         instance.setOption(allOptionsWithItemGroupId[dataGroupIdStack.pop()], true);
       }
     };
