@@ -1,6 +1,7 @@
 import "./App.css";
 import ScatterTimeline from "./dummyCharts/ScatterTimeline/ScatterTimeline";
 import MultiDrilldown from "./dummyCharts/MultiDrilldown/MultiDrilldown";
+import DiscreteLines from "./dummyCharts/DiscreteLines/DiscreteLines";
 
 function App() {
   return (
@@ -13,10 +14,17 @@ function App() {
       {/*   </div> */}
       {/* </div> */}
 
-      <h1>2. 多级下钻图</h1>
+      {/* <h1>2. 多级下钻图</h1> */}
+      {/* <div className="demo-box"> */}
+      {/*   <div className="chart-box"> */}
+      {/*     <MultiDrilldown width={"100vw"} height={"500px"} /> */}
+      {/*   </div> */}
+      {/* </div> */}
+
+      <h1>YYY</h1>
       <div className="demo-box">
         <div className="chart-box">
-          <MultiDrilldown width={"100vw"} height={"500px"} />
+          <DiscreteLines width={"100vw"} height={"500px"} />
         </div>
       </div>
     </div>
