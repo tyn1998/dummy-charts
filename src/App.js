@@ -1,6 +1,7 @@
 import "./App.css";
 import ScatterTimeline from "./dummyCharts/ScatterTimeline/ScatterTimeline";
 import MultiDrilldown from "./dummyCharts/MultiDrilldown/MultiDrilldown";
+import YYY1 from "./dummyCharts/YYY/YYY1.jsx";
 import YYY2 from "./dummyCharts/YYY/YYY2.jsx";
 
 function App() {
@@ -21,8 +22,11 @@ function App() {
       {/*   </div> */}
       {/* </div> */}
 
-      <h1>YYY2</h1>
-      <YYY2 />
+      <h1>YYY1</h1>
+      <YYY1 />
+
+      {/* <h1>YYY2</h1> */}
+      {/* <YYY2 /> */}
     </div>
   );
 }

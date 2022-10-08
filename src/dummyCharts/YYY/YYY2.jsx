@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 import yyy2 from "./yyy2.json";
 
