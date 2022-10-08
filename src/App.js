@@ -1,7 +1,7 @@
 import "./App.css";
 import ScatterTimeline from "./dummyCharts/ScatterTimeline/ScatterTimeline";
 import MultiDrilldown from "./dummyCharts/MultiDrilldown/MultiDrilldown";
-import DiscreteLines from "./dummyCharts/DiscreteLines/DiscreteLines";
+import YYY2 from "./dummyCharts/YYY/YYY2.jsx";
 
 function App() {
   return (
@@ -21,12 +21,8 @@ function App() {
       {/*   </div> */}
       {/* </div> */}
 
-      <h1>YYY</h1>
-      <div className="demo-box">
-        <div className="chart-box">
-          <DiscreteLines width={"100vw"} height={"500px"} />
-        </div>
-      </div>
+      <h1>YYY2</h1>
+      <YYY2 />
     </div>
   );
 }
